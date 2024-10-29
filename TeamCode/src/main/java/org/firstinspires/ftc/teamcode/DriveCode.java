@@ -6,12 +6,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-/*Ports
+/*Ports ControlHub
 Port0 = frontRight
 Port1 = backRight
 Port2 = backLeft
 Port3 = frontLeft
-The commit and push didn't work*/
+
+Ports ExpansionHub
+Port2 = armRaise
+Port3 = LinearSlide
+*/
 @TeleOp(name="TeleOp v1", group="Primary")
 @SuppressWarnings("FieldCanBeLocal")
 public class DriveCode extends LinearOpMode {
@@ -19,10 +23,10 @@ public class DriveCode extends LinearOpMode {
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
-    private DcMotor armMotor;
+    private DcMotor linearSlide;
     private DcMotor armRaise;
-    private Servo servoOne;
-    private Servo servoTwo;
+    private Servo servoLeft;
+    private Servo servoRight;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -43,16 +47,16 @@ public class DriveCode extends LinearOpMode {
         double horizontal = -gamepad1.left_stick_x;
         double pivot = -gamepad1.right_stick_x;
 
-        frontRight.setPower(-(vertical - horizontal - pivot));
-        backRight.setPower(-(vertical + horizontal -pivot));
-        frontLeft.setPower(-(vertical + horizontal + pivot));
-        backLeft.setPower(-(vertical - horizontal + pivot));
+        frontRight.setPower((vertical + horizontal - pivot));
+        backRight.setPower((vertical - horizontal - pivot));
+        frontLeft.setPower((-vertical - horizontal - pivot));
+        backLeft.setPower((-vertical + horizontal - pivot));
 
         if (gamepad1.dpad_up) {
-            armMotor.setPower(-0.4);
+            linearSlide.setPower(-0.4);
         }
         else {
-            armMotor.setPower(0);
+            linearSlide.setPower(0);
         }
         if(gamepad1.right_bumper) {
             armRaise.setPower(.3);
@@ -64,12 +68,11 @@ public class DriveCode extends LinearOpMode {
         }
 
         if (gamepad1.b) {
-            servoOne.setPosition(.5);
-            servoTwo.setPosition(.7);
-        }
-        if (gamepad1.a) {
-            servoOne.setPosition(.3);
-            servoTwo.setPosition(.8);
+            servoLeft.setPosition(0.5);
+            servoRight.setPosition(0.5);
+        } else if (gamepad1.a) {
+            servoLeft.setPosition(0.97);
+            servoRight.setPosition(0.03);
         }
 
 
@@ -80,7 +83,7 @@ public class DriveCode extends LinearOpMode {
         telemetry.addData("frontLeft", "Encoder: %2d, Power: %.2f", frontLeft.getCurrentPosition(), frontLeft.getPower());
         telemetry.addData("backRight", "Encoder: %2d, Power: %.2f", backRight.getCurrentPosition(), backRight.getPower());
         telemetry.addData("backLeft", "Encoder: %2d, Power: %.2f", backLeft.getCurrentPosition(), backLeft.getPower());
-        telemetry.addData("armMotor", "Encoder: %2d, Power: %.2f", armMotor.getCurrentPosition(), armMotor.getPower());
+        telemetry.addData("linearSlide", "Encoder: %2d, Power: %.2f", linearSlide.getCurrentPosition(), linearSlide.getPower());
         telemetry.addData("armRaise", "Encoder: %2d, Power: %.2f", armRaise.getCurrentPosition(), armRaise.getPower());
         telemetry.update();
     }
@@ -89,29 +92,29 @@ public class DriveCode extends LinearOpMode {
         initFrontLeft();
         initBackRight();
         initBackLeft();
-        initArmMotor();
+        initLinearSlide();
         initArmRaise();
-        initServoOne();
-        initServoTwo();
+        initServoLeft();
+        initServoRight();
     }
     public void initArmRaise() {
         armRaise = hardwareMap.get(DcMotor.class, "armRaise");
         armRaise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armRaise.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-    public void initServoOne() {
-        servoOne = hardwareMap.get(Servo.class, "servoOne");
-        servoOne.setPosition(-1);
+    public void initServoLeft() {
+        servoLeft = hardwareMap.get(Servo.class, "servoLeft");
+        servoLeft.setPosition(.5);
     }
-    public void initServoTwo() {
-        servoTwo = hardwareMap.get(Servo.class, "servoTwo");
-        servoOne.setPosition(1);
+    public void initServoRight() {
+        servoRight = hardwareMap.get(Servo.class, "servoRight");
+        servoRight.setPosition(.5);
     }
-    public void initArmMotor(){
-        armMotor = hardwareMap.get(DcMotor.class, "armMotor");
-        armMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        armMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    public void initLinearSlide(){
+        linearSlide = hardwareMap.get(DcMotor.class, "linearSlide");
+        linearSlide.setDirection(DcMotorSimple.Direction.FORWARD);
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     public void initFrontRight() {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
