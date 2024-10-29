@@ -59,9 +59,9 @@ public class DriveCode extends LinearOpMode {
             linearSlide.setPower(0);
         }
         if(gamepad1.right_bumper) {
-            armRaise.setPower(.3);
+            armRaise.setPower(.4);
         } else if (gamepad1.left_bumper) {
-            armRaise.setPower(-.3);
+            armRaise.setPower(-.4);
         }
         else {
             armRaise.setPower(0);
