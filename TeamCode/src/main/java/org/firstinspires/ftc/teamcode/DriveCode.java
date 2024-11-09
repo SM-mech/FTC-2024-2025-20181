@@ -27,7 +27,10 @@ public class DriveCode extends LinearOpMode {
     private DcMotor armRaise;
     private Servo servoLeft;
     private Servo servoRight;
-
+    double coreHexTicks = 288;
+    double newTarget;
+    int x = 0; // servo movement
+    int y = 0; // was button already pressed?
     @Override
     public void runOpMode() throws InterruptedException {
         initHardware();
@@ -43,40 +46,51 @@ public class DriveCode extends LinearOpMode {
     }
 
     public void teleOpControls() {
-        double vertical = gamepad1.left_stick_y;
+        double vertical = -gamepad1.left_stick_y;
         double horizontal = -gamepad1.left_stick_x;
         double pivot = -gamepad1.right_stick_x;
 
-        frontRight.setPower((vertical + horizontal - pivot));
-        backRight.setPower((vertical - horizontal - pivot));
-        frontLeft.setPower((-vertical - horizontal - pivot));
-        backLeft.setPower((-vertical + horizontal - pivot));
+        frontRight.setPower((vertical + horizontal + pivot));
+        backRight.setPower((vertical - horizontal + pivot));
+        frontLeft.setPower((vertical - horizontal - pivot));
+        backLeft.setPower((vertical + horizontal - pivot));
 
         if (gamepad1.dpad_up) {
-            linearSlide.setPower(-0.4);
+            linearSlide.setTargetPosition(-2300);
+            linearSlide.setPower(.3);
+            linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
-        else {
-            linearSlide.setPower(0);
+        else if (gamepad1.dpad_down){
+            linearSlide.setTargetPosition(0);
+            linearSlide.setPower(.4);
+            linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
         if(gamepad1.right_bumper) {
-            armRaise.setPower(.4);
+            encoder(.25);
         } else if (gamepad1.left_bumper) {
-            armRaise.setPower(-.4);
+            encoder(0);
         }
-        else {
-            armRaise.setPower(0);
+        if (gamepad1.a && y == 0) {
+            switch (x) {
+                case 0:
+                    telemetry.addLine("it actually works");
+                    servoLeft.setPosition(0.97);
+                    servoRight.setPosition(0.03);
+                    x = 1;
+                    y = 1;
+                    break;
+                case 1:
+                    servoLeft.setPosition(0.5);
+                    servoRight.setPosition(0.5);
+                    x = 0;
+                    y = 1;
+                    break;
+                default:
+                    break;
+            }
+        } else if (!gamepad1.a) {
+            y = 0;
         }
-
-        if (gamepad1.b) {
-            servoLeft.setPosition(0.5);
-            servoRight.setPosition(0.5);
-        } else if (gamepad1.a) {
-            servoLeft.setPosition(0.97);
-            servoRight.setPosition(0.03);
-        }
-
-
-
     }
     public void motorTelemetry() {
         telemetry.addData("frontRight", "Encoder: %2d, Power: %.2f", frontRight.getCurrentPosition(), frontRight.getPower());
@@ -100,7 +114,10 @@ public class DriveCode extends LinearOpMode {
     public void initArmRaise() {
         armRaise = hardwareMap.get(DcMotor.class, "armRaise");
         armRaise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armRaise.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        armRaise.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armRaise.setTargetPosition(79);
+        armRaise.setPower(.1);
+        armRaise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     public void initServoLeft() {
         servoLeft = hardwareMap.get(Servo.class, "servoLeft");
@@ -114,29 +131,37 @@ public class DriveCode extends LinearOpMode {
         linearSlide = hardwareMap.get(DcMotor.class, "linearSlide");
         linearSlide.setDirection(DcMotorSimple.Direction.FORWARD);
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        linearSlide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void initFrontRight() {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void initFrontLeft() {
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void initBackLeft() {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void initBackRight() {
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    public void encoder(double turnage) {
+        newTarget = coreHexTicks * turnage;
+        armRaise.setTargetPosition((int)newTarget);
+        armRaise.setPower(.3);
+        armRaise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
     }
 
 
