@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="LeftAutoRed", group="Primary")
+@Autonomous(name="AutoRight", group="Primary")
 @SuppressWarnings("FieldCanBeLocal")
 public class LeftAutoRed extends LinearOpMode {
     private DcMotor frontLeft;
@@ -27,41 +27,73 @@ public class LeftAutoRed extends LinearOpMode {
         }
         waitForStart();
         while(opModeIsActive()) {
-            autoControls();
             motorTelemetry();
+            autoControls();
+
         }
     }
 
     public void autoControls() {
         forward(1000);
-        sleep(2000);
+        sleep(1500);
         resetEncoders();
-        turn(135);
-        sleep(2000);
+        turn(-130);
+        sleep(1500);
         resetEncoders();
-        forward2(800);
-        sleep(2000);
+        forward(800);
+        sleep(1500);
         resetEncoders();
-        raiseSlide(-2300);
-        sleep(4000);
-        forward(250);
+        raiseSlide(-2030);
+        Sideways(300);
+        sleep(3500);
+        resetEncoders();
+        forward(450);
         sleep(1500);
         resetEncoders();
         servoOpen();
-        sleep(2000);
-        forward(-2000);
-        sleep(2000);
+        sleep(750);
+        servoClose();
+        turn(130);
+        sleep(1500);
         resetEncoders();
         lowerSlide(0);
-        turn(-45);
+        sleep(3000);
+        resetEncoders();
+        forward(300);
+        sleep(750);
+        resetEncoders();
+        Sideways(550);
+        servoOpen();
+        sleep(750);
+        resetEncoders();
+        encoder(-.25, 1);
         sleep(2000);
         resetEncoders();
-        Sideways(-1500);
-        sleep(2000);
+        forward(450);
+        sleep(725);
         resetEncoders();
-        forward(-400);
-        sleep(14000);
+        servoClose();
+        sleep(400);
+        encoder(0, .5);
+        turn(-135);
+        sleep(1500);
         resetEncoders();
+        forward(675);
+        raiseSlide(-2030);
+        sleep(3475);
+        resetEncoders();
+        forward(125);
+        sleep(300);
+        resetEncoders();
+        servoOpen();
+        sleep(750);
+        servoClose();
+        turn(-50);
+        sleep(750);
+        resetEncoders();
+        lowerSlide(0);
+        Sideways2(-6900, 1);
+        sleep(30000);
 
 
 
@@ -94,15 +126,14 @@ public class LeftAutoRed extends LinearOpMode {
         armRaise = hardwareMap.get(DcMotor.class, "armRaise");
         armRaise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armRaise.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        armRaise.setTargetPosition(79);
-        armRaise.setPower(.1);
-        armRaise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     public void initServoLeft() {
         servoLeft = hardwareMap.get(Servo.class, "servoLeft");
+        servoLeft.setPosition(1);
     }
     public void initServoRight() {
         servoRight = hardwareMap.get(Servo.class, "servoRight");
+        servoRight.setPosition(.03);
     }
     public void initLinearSlide(){
         linearSlide = hardwareMap.get(DcMotor.class, "linearSlide");
@@ -132,10 +163,10 @@ public class LeftAutoRed extends LinearOpMode {
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
-    public void encoder(double turnage) {
+    public void encoder(double turnage, double power) {
         newTarget = coreHexTicks * turnage;
         armRaise.setTargetPosition((int)newTarget);
-        armRaise.setPower(.3);
+        armRaise.setPower(power);
         armRaise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
@@ -157,12 +188,12 @@ public class LeftAutoRed extends LinearOpMode {
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setPower(.5);
-        frontLeft.setPower(.5);
-        backRight.setPower(.5);
-        backLeft.setPower(.5);
+        frontRight.setPower(.7);
+        frontLeft.setPower(.7);
+        backRight.setPower(.7);
+        backLeft.setPower(.7);
     }
-    public void forward2(double ticks) {
+    public void forward2(double ticks, double speed) {
         frontLeft.setTargetPosition((int) (ticks));
         frontRight.setTargetPosition((int) (ticks));
         backLeft.setTargetPosition((int) (ticks));
@@ -171,10 +202,10 @@ public class LeftAutoRed extends LinearOpMode {
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setPower(.5);
-        frontLeft.setPower(.5);
-        backRight.setPower(.5);
-        backLeft.setPower(.5);
+        frontRight.setPower(speed);
+        frontLeft.setPower(speed);
+        backRight.setPower(speed);
+        backLeft.setPower(speed);
     }
     //Use +deg for right and -deg for left
     public void turn(double degrees) {
@@ -186,10 +217,10 @@ public class LeftAutoRed extends LinearOpMode {
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setPower(.5);
-        frontLeft.setPower(.5);
-        backRight.setPower(.5);
-        backLeft.setPower(.5);
+        frontRight.setPower(.7);
+        frontLeft.setPower(.7);
+        backRight.setPower(.7);
+        backLeft.setPower(.7);
     }
     public void Sideways(double ticks) /*Pos for right neg for left */ {
         frontLeft.setTargetPosition((int)(ticks));
@@ -200,10 +231,24 @@ public class LeftAutoRed extends LinearOpMode {
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setPower(.5);
-        frontLeft.setPower(.5);
-        backRight.setPower(.5);
-        backLeft.setPower(.5);
+        frontRight.setPower(.7);
+        frontLeft.setPower(.7);
+        backRight.setPower(.7);
+        backLeft.setPower(.7);
+    }
+    public void Sideways2 (double ticks, double speed) /*Pos for right neg for left */ {
+        frontLeft.setTargetPosition((int)(ticks));
+        frontRight.setTargetPosition(-(int)(ticks));
+        backLeft.setTargetPosition(-(int)(ticks));
+        backRight.setTargetPosition((int)(ticks));
+        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRight.setPower(speed);
+        frontLeft.setPower(speed);
+        backRight.setPower(speed);
+        backLeft.setPower(speed);
     }
     public void resetEncoders () {
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -213,12 +258,12 @@ public class LeftAutoRed extends LinearOpMode {
     }
     public void raiseSlide (double Ticks) {
         linearSlide.setTargetPosition((int)Ticks);
-        linearSlide.setPower(.3);
+        linearSlide.setPower(.4);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     public void lowerSlide (double Ticks) {
         linearSlide.setTargetPosition((int)Ticks);
-        linearSlide.setPower(.3);
+        linearSlide.setPower(.4);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 

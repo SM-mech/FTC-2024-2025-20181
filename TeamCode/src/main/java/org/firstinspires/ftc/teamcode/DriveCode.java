@@ -58,7 +58,7 @@ public class DriveCode extends LinearOpMode {
         backLeft.setPower((vertical + horizontal - pivot));
 
         if (gamepad1.dpad_up) {
-            linearSlide.setTargetPosition(-2330);
+            linearSlide.setTargetPosition(-2030);
             linearSlide.setPower(.4);
             linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             s = 1;
@@ -70,6 +70,8 @@ public class DriveCode extends LinearOpMode {
             s = 0;
         } else if (linearSlide.getCurrentPosition() == 0 && s == 0) {
             linearSlide.setPower(0);
+        } else if (linearSlide.getCurrentPosition() == -2030 && s == 1) {
+            linearSlide.setPower(.1);
         }
 
         if(gamepad1.right_bumper) {
@@ -80,8 +82,10 @@ public class DriveCode extends LinearOpMode {
             z = 1;
         }
         else if (armRaise.getCurrentPosition() == 0 && z == 0) {
-                armRaise.setPower(0);
-            }
+            armRaise.setPower(0);
+        } else if (armRaise.getCurrentPosition() == -.25 && z == 1) {
+            armRaise.setPower(.2);
+        }
         if (gamepad1.a && y == 0) {
             switch (x) {
                 case 0:
