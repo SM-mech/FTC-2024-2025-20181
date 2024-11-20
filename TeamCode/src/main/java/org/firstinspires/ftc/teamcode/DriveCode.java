@@ -58,7 +58,7 @@ public class DriveCode extends LinearOpMode {
         backLeft.setPower((vertical + horizontal - pivot));
 
         if (gamepad1.dpad_up) {
-            linearSlide.setTargetPosition(-2030);
+            linearSlide.setTargetPosition(-2100);
             linearSlide.setPower(.4);
             linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             s = 1;
@@ -105,6 +105,15 @@ public class DriveCode extends LinearOpMode {
             }
         } else if (!gamepad1.a) {
             y = 0;
+        }
+        //failsafe
+        if (gamepad1.y) {
+            armRaise.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            armRaise.setPower(.5);
+        }
+        if (gamepad1.right_trigger >= .9 && gamepad1.left_trigger >= .9) {
+            armRaise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            armRaise.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
     public void motorTelemetry() {

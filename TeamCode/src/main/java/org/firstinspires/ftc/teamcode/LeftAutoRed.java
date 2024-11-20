@@ -34,65 +34,68 @@ public class LeftAutoRed extends LinearOpMode {
     }
 
     public void autoControls() {
-        forward(1000);
+        //First block in basket code
+        raiseSlide(-2030, .3);
+        forward(1000, .7);
         sleep(1500);
         resetEncoders();
-        turn(-130);
+        turn(-130, .7);
         sleep(1500);
         resetEncoders();
-        forward(800);
+        forward(800, .7);
         sleep(1500);
         resetEncoders();
-        raiseSlide(-2030);
-        Sideways(300);
-        sleep(3500);
+        Sideways(300, .7);
+        sleep(750);
         resetEncoders();
-        forward(450);
+        forward(550, .7);
         sleep(1500);
         resetEncoders();
         servoOpen();
         sleep(750);
         servoClose();
-        turn(130);
+
+        //Second block in basket
+        turn(130, .7);
         sleep(1500);
         resetEncoders();
         lowerSlide(0);
+        forward(300, .7);
         sleep(3000);
         resetEncoders();
-        forward(300);
-        sleep(750);
-        resetEncoders();
-        Sideways(550);
+        Sideways(550, .7);
         servoOpen();
         sleep(750);
         resetEncoders();
-        encoder(-.25, 1);
-        sleep(2000);
+        encoder(-.22, 1);
+        sleep(2500);
         resetEncoders();
-        forward(450);
-        sleep(725);
+        forward(650, .7);
+        sleep(1050);
         resetEncoders();
         servoClose();
-        sleep(400);
+        sleep(1000);
         encoder(0, .5);
-        turn(-135);
+        turn(-140, .7);
         sleep(1500);
         resetEncoders();
-        forward(675);
-        raiseSlide(-2030);
-        sleep(3475);
+        forward(675, .7);
+        raiseSlide(-2030, .5);
+        sleep(3300);
         resetEncoders();
-        forward(125);
+        forward(250, .7);
         sleep(300);
         resetEncoders();
         servoOpen();
         sleep(750);
         servoClose();
-        turn(-50);
+
+        //Park
+        turn(-50, .7);
         sleep(750);
         resetEncoders();
         lowerSlide(0);
-        Sideways2(-6900, 1);
+        Sideways(-6900, 1);
         sleep(30000);
 
 
@@ -179,7 +182,7 @@ public class LeftAutoRed extends LinearOpMode {
         servoLeft.setPosition(0.97);
         servoRight.setPosition(0.03);
     }
-    public void forward(double ticks) {
+    public void forward(double ticks, double power) {
         frontLeft.setTargetPosition((int) (ticks));
         frontRight.setTargetPosition((int) (ticks));
         backLeft.setTargetPosition((int) (ticks));
@@ -188,27 +191,13 @@ public class LeftAutoRed extends LinearOpMode {
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setPower(.7);
-        frontLeft.setPower(.7);
-        backRight.setPower(.7);
-        backLeft.setPower(.7);
-    }
-    public void forward2(double ticks, double speed) {
-        frontLeft.setTargetPosition((int) (ticks));
-        frontRight.setTargetPosition((int) (ticks));
-        backLeft.setTargetPosition((int) (ticks));
-        backRight.setTargetPosition((int) (ticks));
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setPower(speed);
-        frontLeft.setPower(speed);
-        backRight.setPower(speed);
-        backLeft.setPower(speed);
+        frontRight.setPower(power);
+        frontLeft.setPower(power);
+        backRight.setPower(power);
+        backLeft.setPower(power);
     }
     //Use +deg for right and -deg for left
-    public void turn(double degrees) {
+    public void turn(double degrees, double power) {
         frontLeft.setTargetPosition((int)(10.889 * degrees));
         frontRight.setTargetPosition((int)(-10.889 * degrees));
         backLeft.setTargetPosition((int)(10.889 * degrees));
@@ -217,12 +206,12 @@ public class LeftAutoRed extends LinearOpMode {
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setPower(.7);
-        frontLeft.setPower(.7);
-        backRight.setPower(.7);
-        backLeft.setPower(.7);
+        frontRight.setPower(power);
+        frontLeft.setPower(power);
+        backRight.setPower(power);
+        backLeft.setPower(power);
     }
-    public void Sideways(double ticks) /*Pos for right neg for left */ {
+    public void Sideways(double ticks, double power) /*Pos for right neg for left */ {
         frontLeft.setTargetPosition((int)(ticks));
         frontRight.setTargetPosition(-(int)(ticks));
         backLeft.setTargetPosition(-(int)(ticks));
@@ -231,34 +220,20 @@ public class LeftAutoRed extends LinearOpMode {
         frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setPower(.7);
-        frontLeft.setPower(.7);
-        backRight.setPower(.7);
-        backLeft.setPower(.7);
+        frontRight.setPower(power);
+        frontLeft.setPower(power);
+        backRight.setPower(power);
+        backLeft.setPower(power);
     }
-    public void Sideways2 (double ticks, double speed) /*Pos for right neg for left */ {
-        frontLeft.setTargetPosition((int)(ticks));
-        frontRight.setTargetPosition(-(int)(ticks));
-        backLeft.setTargetPosition(-(int)(ticks));
-        backRight.setTargetPosition((int)(ticks));
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontRight.setPower(speed);
-        frontLeft.setPower(speed);
-        backRight.setPower(speed);
-        backLeft.setPower(speed);
-    }
-    public void resetEncoders () {
+    public void resetEncoders () { // resets wheel encoders
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
-    public void raiseSlide (double Ticks) {
+    public void raiseSlide (double Ticks, double power) {
         linearSlide.setTargetPosition((int)Ticks);
-        linearSlide.setPower(.4);
+        linearSlide.setPower(power);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
     public void lowerSlide (double Ticks) {
