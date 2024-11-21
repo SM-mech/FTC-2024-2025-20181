@@ -35,21 +35,25 @@ public class LeftAutoRed extends LinearOpMode {
 
     public void autoControls() {
         //First block in basket code
-        raiseSlide(-2030, .3);
+        raiseSlide(-2100, .3);
         forward(1000, .7);
-        sleep(1500);
+        sleep(1000);
+        motorTelemetry();
         resetEncoders();
         turn(-130, .7);
-        sleep(1500);
+        sleep(1250);
+        motorTelemetry();
         resetEncoders();
         forward(800, .7);
-        sleep(1500);
+        sleep(800);
+        motorTelemetry();
         resetEncoders();
-        Sideways(300, .7);
-        sleep(750);
+        Sideways(250, .7);
+        sleep(350);
+        motorTelemetry();
         resetEncoders();
         forward(550, .7);
-        sleep(1500);
+        sleep(1000);
         resetEncoders();
         servoOpen();
         sleep(750);
@@ -57,45 +61,45 @@ public class LeftAutoRed extends LinearOpMode {
 
         //Second block in basket
         turn(130, .7);
-        sleep(1500);
+        sleep(1250);
         resetEncoders();
         lowerSlide(0);
         forward(300, .7);
-        sleep(3000);
+        sleep(500);
         resetEncoders();
-        Sideways(550, .7);
+        Sideways(720, .7);
         servoOpen();
-        sleep(750);
+        sleep(2050);
         resetEncoders();
-        encoder(-.22, 1);
+        encoder(-.23, 1);
         sleep(2500);
         resetEncoders();
-        forward(650, .7);
+        forward(850, .7);
         sleep(1050);
         resetEncoders();
         servoClose();
         sleep(1000);
-        encoder(0, .5);
+        raiseSlide(-2100, .5);
+        encoder(0, .8);
         turn(-140, .7);
-        sleep(1500);
+        sleep(1400);
         resetEncoders();
         forward(675, .7);
-        raiseSlide(-2030, .5);
-        sleep(3300);
+        sleep(1200);
         resetEncoders();
-        forward(250, .7);
-        sleep(300);
+        forward(550, .7);
+        sleep(700);
         resetEncoders();
         servoOpen();
         sleep(750);
         servoClose();
 
         //Park
-        turn(-50, .7);
-        sleep(750);
+        turn(135, 1);
+        sleep(1550);
         resetEncoders();
         lowerSlide(0);
-        Sideways(-6900, 1);
+        //Sideways(-6900, 1);
         sleep(30000);
 
 

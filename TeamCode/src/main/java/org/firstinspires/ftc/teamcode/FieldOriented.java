@@ -1,10 +1,16 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /*Ports ControlHub
 Port0 = frontRight
@@ -16,19 +22,28 @@ Ports ExpansionHub
 Port2 = armRaise
 Port3 = LinearSlide
 */
-@TeleOp(name="TeleOp-Normal", group="Primary")
+@TeleOp(name="TeleOp-FieldOriented", group="Primary")
 @SuppressWarnings("FieldCanBeLocal")
-public class DriveCode extends LinearOpMode {
+public class FieldOriented extends LinearOpMode {
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
+
+    BNO055IMU imu;
+    Orientation angles = new Orientation();
+
     private DcMotor linearSlide;
     private DcMotor armRaise;
+
     private Servo servoLeft;
     private Servo servoRight;
+
     double coreHexTicks = 288;
     double newTarget;
+    double originalYaw;
+    double changedYaw;
+
     int x = 0; // servo movement
     int y = 0; // was button already pressed?
     int z = 0; // for arm power
@@ -36,7 +51,7 @@ public class DriveCode extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         initHardware();
-
+        fieldOrientedVar();
         while(!isStarted()) {
             motorTelemetry();
         }
@@ -44,33 +59,25 @@ public class DriveCode extends LinearOpMode {
         while(opModeIsActive()) {
             teleOpControls();
             motorTelemetry();
+            drive();
         }
     }
 
     public void teleOpControls() {
-        double vertical = -gamepad1.left_stick_y;
-        double horizontal = -gamepad1.left_stick_x;
-        double pivot = -gamepad1.right_stick_x;
-
-        frontRight.setPower((vertical + horizontal + pivot));
-        backRight.setPower((vertical - horizontal + pivot));
-        frontLeft.setPower((vertical - horizontal - pivot));
-        backLeft.setPower((vertical + horizontal - pivot));
-
         if (gamepad1.dpad_up) {
             linearSlide.setTargetPosition(-2100);
-            linearSlide.setPower(.4);
+            linearSlide.setPower(.5);
             linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             s = 1;
         }
         else if (gamepad1.dpad_down){
             linearSlide.setTargetPosition(0);
-            linearSlide.setPower(.4);
+            linearSlide.setPower(.6);
             linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             s = 0;
         } else if (linearSlide.getCurrentPosition() == 0 && s == 0) {
             linearSlide.setPower(0);
-        } else if (linearSlide.getCurrentPosition() == -2030 && s == 1) {
+        } else if (linearSlide.getCurrentPosition() == -2100 && s == 1) {
             linearSlide.setPower(.1);
         }
 
@@ -183,6 +190,55 @@ public class DriveCode extends LinearOpMode {
         armRaise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
 
+    }
+    public void drive() {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        changedYaw = angles.firstAngle-originalYaw;
+        double zeroYaw = -originalYaw+angles.firstAngle;
+
+
+        double vertical = -gamepad1.left_stick_y;
+        double horizontal = gamepad1.left_stick_x;
+        double pivot = gamepad1.right_stick_x;
+
+        double theta = Math.atan2(vertical, horizontal) * 180/Math.PI;
+        double realTheta;
+        realTheta = (360 - zeroYaw) + theta;
+        double power = Math.hypot(horizontal, vertical);
+
+        double sin = Math.sin((realTheta * (Math.PI / 180)) - (Math.PI / 4));
+        double cos = Math.cos((realTheta * (Math.PI / 180)) - (Math.PI / 4));
+        double max = Math.max(Math.abs(sin), Math.abs(cos));
+
+        double frontRightOne = ((power * sin / max - pivot));
+        double backRightOne = ((power * cos / max - pivot));
+        double frontLeftOne =((power * cos / max + pivot));
+        double backLeftOne = ((power * sin / max + pivot));
+        if ((power + Math.abs(pivot)) > 1) {
+            frontLeftOne /= power + pivot;
+            frontRightOne /= power - pivot;
+            backLeftOne /= power + pivot;
+            backRightOne /= power - pivot;
+
+        }
+        frontLeft.setPower(frontLeftOne);
+        frontRight.setPower(frontRightOne);
+        backLeft.setPower(backLeftOne);
+        backRight.setPower(backRightOne);
+    }
+    public void fieldOrientedVar() {
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize((parameters));
+
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        originalYaw = angles.firstAngle;
     }
 
 
