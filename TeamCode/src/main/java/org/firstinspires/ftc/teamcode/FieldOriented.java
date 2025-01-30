@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -22,6 +24,7 @@ Ports ExpansionHub
 Port2 = armRaise
 Port3 = LinearSlide
 */
+@Disabled
 @TeleOp(name="TeleOp-FieldOriented", group="Primary")
 @SuppressWarnings("FieldCanBeLocal")
 public class FieldOriented extends LinearOpMode {
@@ -34,7 +37,7 @@ public class FieldOriented extends LinearOpMode {
     Orientation angles = new Orientation();
 
     private DcMotor linearSlide;
-    private DcMotor armRaise;
+    private DcMotorEx armRaise;
 
     private Servo servoLeft;
     private Servo servoRight;
@@ -48,6 +51,7 @@ public class FieldOriented extends LinearOpMode {
     int y = 0; // was button already pressed?
     int z = 0; // for arm power
     int s = 0;
+
     @Override
     public void runOpMode() throws InterruptedException {
         initHardware();
@@ -65,27 +69,33 @@ public class FieldOriented extends LinearOpMode {
 
     public void teleOpControls() {
         if (gamepad1.dpad_up) {
-            linearSlide.setTargetPosition(-2100);
-            linearSlide.setPower(.5);
+            linearSlide.setTargetPosition(-2430);
+            linearSlide.setPower(.1);
             linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             s = 1;
         }
         else if (gamepad1.dpad_down){
             linearSlide.setTargetPosition(0);
-            linearSlide.setPower(.6);
+            linearSlide.setPower(0);
             linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             s = 0;
         } else if (linearSlide.getCurrentPosition() == 0 && s == 0) {
             linearSlide.setPower(0);
-        } else if (linearSlide.getCurrentPosition() == -2100 && s == 1) {
+        } else if (linearSlide.getCurrentPosition() == -2230 && s == 1) {
+            linearSlide.setPower(.1);
+        }
+        else if (linearSlide.getCurrentPosition() >= 0){
+            linearSlide.setTargetPosition(0);
             linearSlide.setPower(.1);
         }
 
         if(gamepad1.right_bumper) {
             z = 0;
-            encoder(0, .5);
+            armRaise.setTargetPosition(armRaise.getCurrentPosition()+2);
+            armRaise.setPower(.5);
         } else if (gamepad1.left_bumper) {
-            encoder(-.25, 1);
+            armRaise.setTargetPosition(armRaise.getCurrentPosition()-2);
+            armRaise.setPower(.5);
             z = 1;
         }
         else if (armRaise.getCurrentPosition() == 0 && z == 0) {
@@ -122,6 +132,9 @@ public class FieldOriented extends LinearOpMode {
             armRaise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             armRaise.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+        if (gamepad1.x) {
+            fieldOrientedVar();
+        }
     }
     public void motorTelemetry() {
         telemetry.addData("frontRight", "Encoder: %2d, Power: %.2f", frontRight.getCurrentPosition(), frontRight.getPower());
@@ -143,9 +156,10 @@ public class FieldOriented extends LinearOpMode {
         initServoRight();
     }
     public void initArmRaise() {
-        armRaise = hardwareMap.get(DcMotor.class, "armRaise");
+        armRaise = hardwareMap.get(DcMotorEx.class, "armRaise");
         armRaise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         armRaise.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        armRaise.setTargetPositionTolerance(3);
     }
     public void initServoLeft() {
         servoLeft = hardwareMap.get(Servo.class, "servoLeft");
@@ -166,22 +180,26 @@ public class FieldOriented extends LinearOpMode {
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public void initFrontLeft() {
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public void initBackLeft() {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public void initBackRight() {
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
     public void encoder(double turnage, double speed) {
         newTarget = coreHexTicks * turnage;
@@ -220,7 +238,6 @@ public class FieldOriented extends LinearOpMode {
             frontRightOne /= power - pivot;
             backLeftOne /= power + pivot;
             backRightOne /= power - pivot;
-
         }
         frontLeft.setPower(frontLeftOne);
         frontRight.setPower(frontRightOne);

@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @Config
 @TeleOp
 @SuppressWarnings("FieldCanBeLocal")
-public class Drivecode extends OpMode {
+public class Drivecode_test extends OpMode {
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft;
@@ -91,7 +91,7 @@ public class Drivecode extends OpMode {
                     s = 1;
                     break;
                 case 1:
-                    linearSlide.setTargetPosition(-2210);
+                    linearSlide.setTargetPosition(-2090);
                     linearSlide.setPower(1);
                     linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     o = 0;
@@ -206,7 +206,7 @@ public class Drivecode extends OpMode {
     public void initLinearSlide(){
         linearSlide = hardwareMap.get(DcMotor.class, "linearSlide");
         linearSlide.setDirection(DcMotorSimple.Direction.FORWARD);
-        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
     public void initFrontRight() {

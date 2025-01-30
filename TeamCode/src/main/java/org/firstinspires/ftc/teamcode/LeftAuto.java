@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="AutoRight", group="Primary")
+@Autonomous(name="AutoLeft", group="Primary")
 @SuppressWarnings("FieldCanBeLocal")
-public class LeftAutoRed extends LinearOpMode {
+public class LeftAuto extends LinearOpMode {
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft;
@@ -34,61 +34,73 @@ public class LeftAutoRed extends LinearOpMode {
     }
 
     public void autoControls() {
+        while (frontLeft.isBusy()) {
+            sleep(10);
+        }
         //First block in basket code
-        raiseSlide(-2100, .3);
+        raiseSlide(-2185, .3);
         forward(1000, .7);
-        sleep(1000);
-        motorTelemetry();
+        sleep();
+
         resetEncoders();
         turn(-130, .7);
-        sleep(1250);
-        motorTelemetry();
+        sleep();
+
         resetEncoders();
         forward(800, .7);
-        sleep(800);
-        motorTelemetry();
+        sleep();
+
         resetEncoders();
         Sideways(250, .7);
-        sleep(350);
-        motorTelemetry();
+        sleep();
+
         resetEncoders();
         forward(550, .7);
-        sleep(1000);
+        sleep();
+
         resetEncoders();
         servoOpen();
-        sleep(750);
+        sleep(1750);
         servoClose();
 
         //Second block in basket
         turn(130, .7);
-        sleep(1250);
+        sleep();
         resetEncoders();
+
         lowerSlide(0);
         forward(300, .7);
-        sleep(500);
+        sleep();
+
         resetEncoders();
         Sideways(720, .7);
         servoOpen();
-        sleep(2050);
+        sleep();
+
         resetEncoders();
         encoder(-.23, 1);
         sleep(2500);
+
         resetEncoders();
         forward(850, .7);
-        sleep(1050);
+        sleep();
+
         resetEncoders();
         servoClose();
         sleep(1000);
-        raiseSlide(-2100, .5);
+        raiseSlide(-2185, .5);
         encoder(0, .8);
         turn(-140, .7);
-        sleep(1400);
+        sleep();
+
         resetEncoders();
         forward(675, .7);
-        sleep(1200);
+        sleep();
+
         resetEncoders();
         forward(550, .7);
-        sleep(700);
+        sleep();
+
         resetEncoders();
         servoOpen();
         sleep(750);
@@ -96,17 +108,12 @@ public class LeftAutoRed extends LinearOpMode {
 
         //Park
         turn(135, 1);
-        sleep(1550);
+        sleep();
+
         resetEncoders();
         lowerSlide(0);
         //Sideways(-6900, 1);
         sleep(30000);
-
-
-
-
-
-
 
 
     }
@@ -136,11 +143,13 @@ public class LeftAutoRed extends LinearOpMode {
     }
     public void initServoLeft() {
         servoLeft = hardwareMap.get(Servo.class, "servoLeft");
-        servoLeft.setPosition(1);
+        //servoLeft.setPosition(.89);
+        servoLeft.setDirection(Servo.Direction.REVERSE);
     }
     public void initServoRight() {
         servoRight = hardwareMap.get(Servo.class, "servoRight");
-        servoRight.setPosition(.03);
+        //servoRight.setPosition(.11);
+        servoRight.setDirection(Servo.Direction.REVERSE);
     }
     public void initLinearSlide(){
         linearSlide = hardwareMap.get(DcMotor.class, "linearSlide");
@@ -183,8 +192,8 @@ public class LeftAutoRed extends LinearOpMode {
         servoRight.setPosition(.5);
     }
     public void servoClose() {
-        servoLeft.setPosition(0.97);
-        servoRight.setPosition(0.03);
+        servoLeft.setPosition(0.89);
+        servoRight.setPosition(0.11);
     }
     public void forward(double ticks, double power) {
         frontLeft.setTargetPosition((int) (ticks));
@@ -242,8 +251,13 @@ public class LeftAutoRed extends LinearOpMode {
     }
     public void lowerSlide (double Ticks) {
         linearSlide.setTargetPosition((int)Ticks);
-        linearSlide.setPower(.4);
+        linearSlide.setPower(.7);
         linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+    public void sleep() {
+        while (frontLeft.isBusy() || frontRight.isBusy() || backLeft.isBusy() || backRight.isBusy()) {
+            sleep(10);
+        }
     }
 
 
